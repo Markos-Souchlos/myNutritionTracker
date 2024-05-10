@@ -1,0 +1,27 @@
+<%- include('partials/header') %>
+
+<div class="container">
+  <h1>Welcome Back</h1>
+
+      <div class="login-card">
+
+          <!-- Makes POST request to /login route -->
+          <form action="/login" method="POST">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" name="username">
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" name="password">
+            </div>
+            <button type="submit" class="btn btn-dark">Login</button>
+          </form>
+
+      </div>
+
+      <p>Dont't have an account? Create one <a href="/register">here</a></p>
+
+</div>
+
+<%- include('partials/footer') %>
