@@ -11,6 +11,7 @@ const app = express();
 const port = 3000;
 const saltRounds = 10;
 env.config();
+const currentUser = 13;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -38,13 +39,23 @@ db.connect();
 // Fetch users logs
 async function getFoods() {
     try {
-        const result = await db.query(`SELECT foods.id, name, gr, cal, prot, fat, carb FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID WHERE USER_FOODS.USER_ID = 13;`);
+        const result = await db.query(`SELECT foods.id, name, gr, cal, prot, fat, carb FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID WHERE USER_FOODS.USER_ID = ${currentUser};`);
         console.log(result.rows)
         return result.rows;
     } catch (err) {
         console.log(err);
     }
 }
+
+app.post("/delete", async (req,res) => {
+    const id = req.body.id;
+    try {
+        await db.query(`DELETE FROM USER_FOODS WHERE FOOD_ID = ${id} AND USER_ID = ${currentUser};`);
+    } catch (error) {
+        console.log(error)
+    }
+    res.redirect("/secrets");
+});
 
 app.get("/", (req, res) => {
   res.render("login.ejs");

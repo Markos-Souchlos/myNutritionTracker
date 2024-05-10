@@ -248,7 +248,6 @@ section {
 }
 
 .up .del button {
-  /* height:20px; */
   width:20px; 
   position: absolute;
   top:-20px;
@@ -278,6 +277,10 @@ section {
   border-radius:5px;
   padding:5px 10px;
   display: none;
+}
+.up form button:hover {
+  cursor: pointer;
+  border-color: white;
 }
 
 .finfo > .down {
