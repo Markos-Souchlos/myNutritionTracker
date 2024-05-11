@@ -240,6 +240,29 @@ section {
   position:relative;
   left:10px;
   color:white;
+  display: block;
+}
+
+.up .edit-form {
+  position:relative;
+}
+
+.up input {
+  background-color: inherit;
+  width:28px;
+  height: 25px;
+  border: 1px solid grey;
+  border-radius: 10px;
+  color: white;
+  text-align: center;
+  position:relative;
+  left:10px;
+  display: none;
+  -moz-appearance: textfield;
+}
+
+.up input:focus {
+  outline: none;
 }
 
 .up .fg:hover {
@@ -373,6 +396,10 @@ nav {
   width:75px;
   background-color: var(--blue);
 }
+#add:hover {
+  cursor:pointer;
+  background-color: #0095ff;
+}
 
 #add .cross {
   border-radius: 50%;
@@ -402,11 +429,11 @@ nav {
 
 #bgtr {
   background-color: var(--dark);
-  width:95px;
-  height: 95px;
-  border-radius: 50px;
+  width:90px;
+  height: 50px;
+  border-radius: 0px 0px 50px 50px;
   position: relative;
-  bottom:9px;
-  right:10px;
+  top:34px;
+  right:8px;
   z-index: -1;
 }

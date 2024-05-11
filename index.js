@@ -35,17 +35,36 @@ const db = new pg.Client({
   port: process.env.PG_PORT,
 });
 db.connect();
+console.log(`Database has been succesfully connected with the server`)
 
 // Fetch users logs
 async function getFoods() {
     try {
-        const result = await db.query(`SELECT foods.id, name, gr, cal, prot, fat, carb FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID WHERE USER_FOODS.USER_ID = ${currentUser};`);
-        console.log(result.rows)
+        const result = await db.query(`SELECT foods.id, name, gr, cal, prot, fat, carb FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID WHERE USER_FOODS.USER_ID = ${currentUser} ORDER BY CAL DESC;`);
         return result.rows;
     } catch (err) {
         console.log(err);
     }
 }
+
+app.post("/update", async (req,res) => {
+    const grams = parseInt(req.body.grams);
+    const foodID = parseInt(req.body.food);
+    if (grams === 0) {
+        try {
+            await db.query(`DELETE FROM USER_FOODS WHERE FOOD_ID = ${foodID} AND USER_ID = ${currentUser};`);
+        } catch (error) {
+            console.log(error);
+        }
+    } else {
+        try {
+            await db.query(`UPDATE USER_FOODS SET GR = ${grams} WHERE FOOD_ID = ${foodID} AND USER_ID = ${currentUser};`);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    res.redirect("/secrets");
+})
 
 app.post("/delete", async (req,res) => {
     const id = req.body.id;
@@ -81,12 +100,9 @@ app.get("/logout", (req,res) => {
 });
 
 app.get("/secrets", (req,res) => {
-  console.log(req.user);
   if (req.isAuthenticated()) {
     (async () => {
-        const foods = await getFoods();
-        console.log("foods: ",foods)
-    
+        const foods = await getFoods();    
         res.render("secrets.ejs", {
             foods: foods
         })
@@ -137,7 +153,6 @@ app.post("/login", passport.authenticate("local", {
 }));
 
 passport.use(new Strategy(async function verify(username, password, cb) {
-  console.log(username)
 
   try {
     const result = await db.query("SELECT * FROM users WHERE email = $1", [
@@ -182,9 +197,11 @@ app.listen(port, () => {
 
 
 
-//TODO make each user fetch his own data
-//TODO make .log buttons work
+//* make each user fetch his own data
+// make .log buttons work
 //todo make .add button work
 
 // TODO add favicon
+// TODO add favicon
+// TODO add navbar icons
 // TODO add seperate css pages
