@@ -38,14 +38,64 @@ db.connect();
 console.log(`Database has been succesfully connected with the server`)
 
 // Fetch users logs
-async function getFoods() {
+async function getUserFoods() {
     try {
-        const result = await db.query(`SELECT foods.id, name, gr, cal, prot, fat, carb FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID WHERE USER_FOODS.USER_ID = ${currentUser} ORDER BY CAL DESC;`);
+        const result = await db.query(`SELECT foods.id, name, gr, cal, prot, fat, carb, icon FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID WHERE USER_FOODS.USER_ID = ${currentUser} ORDER BY CAL DESC;`);
         return result.rows;
     } catch (err) {
         console.log(err);
     }
 }
+
+// Fetch foods
+async function getFoods() {
+  try {
+      const result = await db.query(`SELECT FOODS.* FROM FOODS LEFT JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID  AND USER_FOODS.USER_ID = ${currentUser} WHERE USER_FOODS.USER_ID IS NULL ORDER BY NAME;`);
+      return result.rows;
+  } catch (err) {
+      console.log(err);
+  }
+}
+
+app.post("/add", async (req,res) => {
+  var foodsString = req.body.foodsArray;
+  var gramsString = req.body.gramsArray;
+  foodsString = foodsString.split(',');
+  gramsString = gramsString.split(',');
+  var command = "";
+
+  for (let i=0; i<foodsString.length; i++) {
+    if (!!(parseInt(gramsString[i])) && gramsString != "0") {
+    command += `(${currentUser}, ${foodsString[i]}, ${gramsString[i]}),`;
+    }
+  }
+
+
+  const final = command.slice(0, -1);
+
+  if (!!(command)) {
+    try {
+      db.query(`INSERT INTO USER_FOODS VALUES ${final};`);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  res.redirect("/secrets");
+})
+
+app.get("/add-food-page", async (req,res) => {
+  if (req.isAuthenticated()) {
+    (async () => {
+        const foods = await getFoods();    
+        res.render("add-food.ejs", {
+            foods: foods
+        })
+    })();
+  } else {
+    res.redirect("/login");
+  }
+});
 
 app.post("/update", async (req,res) => {
     const grams = parseInt(req.body.grams);
@@ -102,7 +152,7 @@ app.get("/logout", (req,res) => {
 app.get("/secrets", (req,res) => {
   if (req.isAuthenticated()) {
     (async () => {
-        const foods = await getFoods();    
+        const foods = await getUserFoods();    
         res.render("secrets.ejs", {
             foods: foods
         })
@@ -197,11 +247,23 @@ app.listen(port, () => {
 
 
 
-//* make each user fetch his own data
-// make .log buttons work
-//todo make .add button work
 
-// TODO add favicon
-// TODO add favicon
-// TODO add navbar icons
+// todo add database foods
+// todo add database foods
+// todo add new food button
+
+//todo make each user fetch his own data
+// make .log buttons work
+// make .add button work
+// add favicon
+// add navbar icons
 // TODO add seperate css pages
+//  add search engine
+// TODO scan bar code
+// todo make premium page + icon
+// todo create food option
+// todo make database macros float and update the values
+
+
+
+//users premium account has more storage for foods in the database

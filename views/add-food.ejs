@@ -1,0 +1,151 @@
+<%- include('partials/header') %>
+
+<form id="add-form" action="/add" method="post">
+
+    <div id="header">
+        <h1>Select  a food</h1>
+        <input type="button" value="Done" id="submitBtn" class="inactive" onclick="submitForm()" />
+        <input type="hidden" value="" id="foodsArray" name="foodsArray"/>
+        <input type="hidden" value="" id="gramsArray" name="gramsArray"/>
+    </div>
+
+    <div id="search">
+        <input type="search" id="search-input" placeholder="Search something" onkeyup="displayOptions(this)" autocomplete="off"/>
+        <button>
+            <img src="/icons/barcode-scan.png" />
+        </button>
+        <input type="button" value="Search" id="search-btn" />
+    </div>
+    
+
+    <% foods.forEach(obj => { %>
+
+        <div class="logs" id="N<%= obj.id %>">
+            <div class="fimg"><img src="/icons/<%= obj.icon %>" alt="food image" width="100%"></div>
+            <div class="vert-row"></div>
+            <div class="finfo">
+                <div class="up">
+                  <p class="name" id="N<%= obj.id %>"><%= obj.name %></p>
+                  <p class="serving">Serv. size: <span id="gr<%= obj.id %>" oninput="validateNumber(this)" onblur="replace100(this)" contenteditable="true">100</span>gr</p>
+                  <p class="cal">
+                    <span><%= obj.cal %></span>
+                    <small>cal</small>
+                  </p>
+                </div>
+            </div>
+            <button type="button" class="add-this-food inactive" id="F<%= obj.id %>" onclick="configureCard(this)">
+                <div class="hor"></div>
+                <div class="ver"></div>
+            </button>
+        </div>
+
+    <% }) %>
+
+    <div style="height: 100px;"></div>
+</form>
+
+
+<%- include('partials/navbar') %>
+
+<%- include('partials/footer') %>
+
+<script>
+    var selectedFoods = [];
+    var grams = [];
+    const submitBtn = document.querySelector('#add-form #submitBtn');
+    const foodsArray = document.querySelector('#add-form #foodsArray');
+    const gramsArray = document.querySelector('#gramsArray');
+    const searchArray = document.querySelectorAll('#add-form .name');
+    
+    function checkSubmitBtn() {
+        if (selectedFoods.length>0) {
+            submitBtn.disabled = false;
+        } else if (selectedFoods.length == 0) {
+            submitBtn.disabled = true;
+        }
+    }
+    
+    checkSubmitBtn()
+    
+    function configureCard(btn) {
+        const foodID = btn.id.match(/\d+/)[0];
+        const hor = document.querySelector(`.logs #F${foodID} .hor`);
+        const ver = document.querySelector(`.logs #F${foodID} .ver`);
+        
+        if (btn.classList.contains('inactive')) {
+            btn.classList.remove('inactive');
+            btn.classList.add('active');
+            hor.style.backgroundColor = "white";
+            ver.style.backgroundColor = "white";
+            selectedFoods.push(foodID);
+        } else {
+            btn.classList.remove('active');
+            btn.classList.add('inactive');
+            hor.style.backgroundColor = "grey";
+            ver.style.backgroundColor = "grey";
+            selectedFoods = selectedFoods.filter(i => i != foodID );
+        }
+        
+        if (selectedFoods.length>0 && submitBtn.classList.contains('inactive')) {
+            submitBtn.classList.remove('inactive');
+            submitBtn.classList.add('active');
+        } else if (selectedFoods.length == 0 && submitBtn.classList.contains('active')) {
+            submitBtn.classList.remove('active');
+            submitBtn.classList.add('inactive');
+        }
+        
+        
+        checkSubmitBtn()
+        
+    }
+
+    function displayOptions(myStr) {
+
+        searchArray.forEach(element => {
+            
+            const name = element.innerHTML.toLocaleLowerCase();
+            const myCard = document.querySelector(`#N${element.id.match(/\d+/)[0]}`);
+            
+            if (element.innerHTML.toLocaleLowerCase().includes(myStr.value.toLocaleLowerCase())) {
+                myCard.style.display = "block";
+            } else {
+                myCard.style.display = "none";
+            }
+        });
+    }
+    
+    function submitForm() {
+        
+        selectedFoods.forEach(num => {
+            const gramTag = document.querySelector(`.serving #gr${num}`);
+            grams.push(gramTag.innerHTML);
+        })
+
+        foodsArray.value = selectedFoods.toString();
+        gramsArray.value = grams.toString();
+
+        document.querySelector('#add-form').submit();
+
+    }
+
+    function validateNumber(spanElement) {
+        let text = spanElement.textContent.trim();
+        let pattern = new RegExp(/\D+/);
+
+        if (pattern.test(text)) {
+            console.log("char detected")
+            // Replace the content with only the valid portion
+            let validText = text.replace(/\D/g, '');
+            spanElement.textContent = validText;
+        }
+
+    }
+
+    function replace100(element) {
+        if (!(element.textContent)) {
+            element.textContent = "0";
+        }
+    }
+
+    
+</script>
