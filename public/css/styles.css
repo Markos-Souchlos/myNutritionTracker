@@ -8,11 +8,13 @@
 
 body {
   background-color: var(--dark);
-  font-family: "Source Sans Pro", sans-serif;
+  font-family:  "Source Sans Pro", sans-serif;
   color:white;
   padding:0px;
   margin:0px;
+  font-weight: 400;
 }
+
 
 .container {
   margin:auto;
@@ -91,15 +93,15 @@ body {
 #date {
   font-size: 18px;
   position:relative;
-  top:10px;
-  left:20px;
+  top:20px;
+  left:30px;
 }
 
 #crown {
   width:35px;
   position: absolute;
-  top:20px;
-  right:20px;
+  top:35px;
+  right:30px;
 }
 
 #circle {
@@ -486,13 +488,12 @@ nav {
   display: flex;
   justify-content: space-between;
   gap:20px;
-  padding:50px 0px 20px 0px;
+  padding:30px 0px 20px 0px;
   align-items: center;
 }
 
 #add-form h1 {
   /* background-color: green; */
-  width:180px;
   margin:0px;
 }
 
@@ -500,7 +501,7 @@ nav {
   height:40px;
   width:80px;
   border-radius: 10px;
-  /* font-weight: bolder; */
+  /* background-color: yellow; */
   font-size: 16px;
 }
 #add-form #submitBtn:hover {
@@ -645,6 +646,180 @@ nav {
   top:9px;
   left:5px;
 }
+
+
+
+
+
+
+
+
+
+#history-page {
+  width: 100%;
+  max-width: 1000px;
+  margin: auto;
+}
+
+#history-page header {
+  /* background-color: red; */
+  background-color: var(--dark);
+  margin:auto;
+  width:100%;
+  padding:30px 0px 20px 0px;
+  gap:20px;
+  position: fixed;
+  top:0px;
+}
+
+#history-page header h1 {
+  margin:0px 0px 0px 35px;
+  font-size: 35px;
+}
+
+#history-page #calendar-btn {
+  position:absolute;
+  top:40px;
+  right:100px;
+  height:30px;
+  width:30px;
+  background-color: darkcyan;
+  border:1px solid grey;
+  border-radius: 10px;
+}
+
+#lower {
+  display: flex;
+  /* background-color: blue; */
+  width:85%;
+  margin:auto;
+  justify-content: space-around;
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+#lower p {
+  width:50px;
+  /* background-color: purple; */
+  text-align: center;
+}
+
+#history-page #container {
+  width:80%;
+  margin:auto;
+  margin-top:150px;
+  display: flex;
+  /* background-color: red; */
+  flex-wrap: wrap;  
+  gap:5px;
+}
+
+#history-page .date {
+  height:50px;
+  text-align: center;
+  align-content: center;
+  flex:1 0 calc(80%/7);
+}
+
+
+
+
+
+
+
+
+
+
+#settings-page  {
+  width:100%;
+  max-width: 1000px;
+}
+
+#settings-page h1 {
+  padding-top:5px;
+  padding-left:30px;
+  padding-bottom: 20px;
+  font-size: 35px;
+}
+
+#settings-page .mycontainer {
+  width:85%;
+  margin:0px auto 40px;
+
+}
+
+#settings-page .mycontainer > div {
+  margin-bottom: 20px;
+}
+
+
+#settings-page h2 {
+  font-weight: 900;
+}
+
+#settings-page h3 {
+  margin:0px;
+  font-weight:400;
+}
+
+#settings-page .mycontainer button {
+  background-color: inherit;
+  border:none;
+  color:grey;
+}
+
+#log-out-cont {
+  margin:auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom:140px;
+  gap:10px;
+}
+
+#log-out {
+  width:85%;
+  height:40px;
+  font-size: 20px;
+  max-width:700px;
+  border: none;
+  background-color: red;
+  border-radius: 10px;
+  color:white;
+  margin:auto;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @media (min-width:1000px) {

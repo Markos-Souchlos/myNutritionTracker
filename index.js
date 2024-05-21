@@ -162,6 +162,63 @@ app.get("/secrets", (req,res) => {
   }
 });
 
+app.get("/history", (req,res) => {
+  if (req.isAuthenticated()) {
+    // (async () => {
+    //     const foods = await getUserFoods();    
+    //     res.render("secrets.ejs", {
+    //         foods: foods
+    //     })
+    // })();
+    res.render("history.ejs");
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.get("/stats", (req,res) => {
+  if (req.isAuthenticated()) {
+    // (async () => {
+    //     const foods = await getUserFoods();    
+    //     res.render("secrets.ejs", {
+    //         foods: foods
+    //     })
+    // })();
+    res.render("stats.ejs");
+  } else {
+    res.redirect("/login");
+  }
+});
+
+app.get("/settings", (req,res) => {
+  if (req.isAuthenticated()) {
+    // (async () => {
+    //     const foods = await getUserFoods();    
+    //     res.render("secrets.ejs", {
+    //         foods: foods
+    //     })
+    // })();
+    res.render("settings.ejs");
+  } else {
+    res.redirect("/login");
+  }
+});
+
+
+app.get("/premium", (req,res) => {
+  if (req.isAuthenticated()) {
+    // (async () => {
+    //     const foods = await getUserFoods();    
+    //     res.render("secrets.ejs", {
+    //         foods: foods
+    //     })
+    // })();
+    res.render("premium.ejs");
+  } else {
+    res.redirect("/login");
+  }
+});
+
 app.post("/register", async (req, res) => {
   const email = req.body.username;
   const password = req.body.password;

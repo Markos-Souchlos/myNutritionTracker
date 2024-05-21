@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+
+<div id="history-page">
+    <header>
+
+        <div class="upper">
+            <h1>History</h1>
+        
+            <button id="calendar-btn"></button>
+    
+            <a href="/premium" title="check out our premium plan!"><img id="crown" src="/icons/crown.png" /></a>    
+        </div>
+
+        <div id="lower">
+            <p>Mon</p>
+            <p>Thu</p>
+            <p>Wen</p>
+            <p>Thu</p>
+            <p>Fri</p>
+            <p>Sut</p>
+            <p>Sun</p>
+        </div>
+
+    </header>
+
+    <div id="container">
+        <% for (let i=0; i<9; i++) {
+               for (let j=0; j<30; j++) {%>
+                   <div class="date"><%= j+1 %></div>
+            <% } %>
+        <% } %>
+    </div>
+
+</div>
+
+<%- include('partials/navbar') %>
+
+<%- include('partials/footer') %>
