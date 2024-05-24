@@ -3,10 +3,12 @@
 <form id="add-form" action="/add" method="post">
 
     <div id="header">
-        <h1>Log your foods</h1>
-        <input type="button" value="Done" id="submitBtn" class="inactive" onclick="submitForm()" />
-        <input type="hidden" value="" id="foodsArray" name="foodsArray"/>
-        <input type="hidden" value="" id="gramsArray" name="gramsArray"/>
+        <div>
+            <h1>Log your foods</h1>
+            <input type="button" value="Done" id="submitBtn" class="inactive" onclick="submitForm()" />
+            <input type="hidden" value="" id="foodsArray" name="foodsArray"/>
+            <input type="hidden" value="" id="gramsArray" name="gramsArray"/>
+        </div>
     </div>
 
     <div id="search">
@@ -14,7 +16,7 @@
         <button>
             <img src="/icons/barcode-scan.png" />
         </button>
-        <input type="button" value="Search" id="search-btn" />
+        <input type="button" value="Create" id="search-btn" />
     </div>
     
 

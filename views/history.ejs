@@ -11,24 +11,46 @@
             <a href="/premium" title="check out our premium plan!"><img id="crown" src="/icons/crown.png" /></a>    
         </div>
 
-        <div id="lower">
-            <p>Mon</p>
-            <p>Thu</p>
-            <p>Wen</p>
-            <p>Thu</p>
-            <p>Fri</p>
-            <p>Sut</p>
-            <p>Sun</p>
-        </div>
-
+        
     </header>
-
+    
+    <div id="days">
+        <p>Mon</p>
+        <p>Tue</p>
+        <p>Wen</p>
+        <p>Thu</p>
+        <p>Fri</p>
+        <p>Sat</p>
+        <p>Sun</p>
+    </div>
+    
     <div id="container">
-        <% for (let i=0; i<9; i++) {
-               for (let j=0; j<30; j++) {%>
-                   <div class="date"><%= j+1 %></div>
-            <% } %>
-        <% } %>
+
+        <% for (let i=0; i<8; i++) {
+                for (let j=0; j<44; j++) { 
+                    if (j/3==1 || j/8==2 || j/4==1) {%>
+
+                    <div class="loged"> <%= j+1 %> </div>
+                <% } else if (j>=30) { %>
+        
+                    <div class="empty"> <%= j+1 %> </div>
+
+                 <% } else if (j/7==0) { %>
+        
+                    <div class="over"> <%= j+1 %> </div>
+                
+                <% } else if (j/4==3) { %>
+        
+                    <div class="succed"> <%= j+1 %> </div>
+
+                <% } else { %>
+
+                    <div class="date"> <%= j+1 %> </div>
+
+            <%  }
+               }
+            } %>
+
     </div>
 
 </div>
