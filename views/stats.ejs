@@ -22,7 +22,7 @@
 <body>
     <main id="stats">
         <header>
-            <h1>Your Stats</h1>
+            <h1 class="header">Your Stats</h1>
             <a href="/premium" title="check out our premium plan!"><img id="crown" src="/icons/crown.png" /></a>
         </header>
     
@@ -55,7 +55,7 @@
             </div>
 
             <div class="stats-card" id="fat-stat">
-                <h2>Fat Mass</h2>
+                <h2>Body Fat %</h2>
             </div>
     
         </div>
@@ -65,47 +65,18 @@
     
     <script>
         // Declaring the data
-        const weightData = [
-            {date: new Date(2024, 0, 1), y: 80.85}, // January
-            {date: new Date(2024, 0, 15), y: 80.56},
-            {date: new Date(2024, 1, 1), y: 81.84}, // February
-            {date: new Date(2024, 1, 15), y: 81.18},
-            {date: new Date(2024, 2, 1), y: 82.43}, // March
-            {date: new Date(2024, 2, 15), y: 82.48},
-            {date: new Date(2024, 3, 1), y: 81.25}, // April
-            {date: new Date(2024, 3, 15), y: 82.27},
-            {date: new Date(2024, 4, 1), y: 81.52}, // May
-            {date: new Date(2024, 4, 15), y: 81.24},
-            {date: new Date(2024, 5, 1), y: 80.76}, // June
-        ];
 
-        const muscleData = [
-            {date: new Date(2024, 0, 1), y: 58.03}, // January
-            {date: new Date(2024, 0, 15), y: 58.23},
-            {date: new Date(2024, 1, 1), y: 58.34}, // February
-            {date: new Date(2024, 1, 15), y: 58.48},
-            {date: new Date(2024, 2, 1), y: 58.43}, // March
-            {date: new Date(2024, 2, 15), y: 58.58},
-            {date: new Date(2024, 3, 1), y: 58.70}, // April
-            {date: new Date(2024, 3, 15), y: 58.87},
-            {date: new Date(2024, 4, 1), y: 59.02}, // May
-            {date: new Date(2024, 4, 15), y: 59.14},
-            {date: new Date(2024, 5, 1), y: 59.26}, // June
-        ]
+        const progressData = <%- JSON.stringify(prog) %>;
+        
+        const weightData = [];
+        const muscleData = [];
+        const fatData = [];
+        progressData.forEach(obj => {
+            weightData.push({date: new Date(obj.date), y: parseFloat(obj.weight)});
+            muscleData.push({date: new Date(obj.date), y: parseFloat(obj.muscle)});
+            fatData.push({date: new Date(obj.date), y: parseFloat(obj.fat)});
+        });
 
-        const fatData = [
-            {date: new Date(2024, 0, 1), y: 18.03}, // January
-            {date: new Date(2024, 0, 15), y: 18.23},
-            {date: new Date(2024, 1, 1), y: 18.34}, // February
-            {date: new Date(2024, 1, 15), y: 18.52},
-            {date: new Date(2024, 2, 1), y: 18.68}, // March
-            {date: new Date(2024, 2, 15), y: 18.78},
-            {date: new Date(2024, 3, 4), y: 18.98}, // April
-            {date: new Date(2024, 3, 15), y: 19.27},
-            {date: new Date(2024, 4, 1), y: 19.42}, // May
-            {date: new Date(2024, 4, 15), y: 19.74},
-            {date: new Date(2024, 5, 1), y: 19.96}, // June
-        ]
 
         const calData = [
             {date: new Date(2024, 5, 1), y: 2626}, // Mon
@@ -323,7 +294,9 @@
             const innerHeight = height - margin.top - margin.bottom;
 
             // Creating Scales
-            const xScale = d3.scaleTime().domain([new Date(2024, 0, 1), new Date(2024, 5, 30)]).range([0, innerWidth]);
+            const now = new Date();
+            
+            const xScale = d3.scaleTime().domain([new Date().setMonth(now.getMonth() - 12), new Date()]).range([0, innerWidth]);
             const yScale = d3.scaleLinear().domain([yDomainMin, yDomainMax]).range([innerHeight, 0]);
 
             // Adding Axes
@@ -339,9 +312,9 @@
             svg.append("g").attr("transform", `translate(0,${innerHeight})`).call(xAxis);
             svg.append("g").call(yAxis);
 
-            // Drawing curved line
-            const line = d3.line().x(d => xScale(d.date)).y(d => yScale(d.y)).curve(d3.curveCatmullRom); // Adding curve
-            svg.append("path").datum(data).attr("fill", "none").attr("stroke", color).attr("stroke-width", 3).attr("d", line);
+            // Drawing line
+            const line = d3.line().x(d => xScale(d.date)).y(d => yScale(d.y));//.curve(d3.curveCardinal)
+            svg.append("path").datum(data).attr("fill", "none").attr("stroke", color).attr("stroke-width", 2).attr("d", line);
 
             // Adding Circles and Tooltips
             const tooltip = d3.select("body").append("div").attr("class", "tooltip");
@@ -354,7 +327,7 @@
                 .append("circle")
                 .attr("cx", d => xScale(d.date))
                 .attr("cy", d => yScale(d.y))
-                .attr("r", 5)
+                .attr("r", 3)
                 .attr("fill", color)
                 .on("click", function(event, d) {
                     tooltip.style("display", "block")
@@ -386,6 +359,7 @@
         createLineCraph('#weight-stat', weightData, '#0073c3');
         createLineCraph('#muscle-stat', muscleData, '#c30000');
         createLineCraph('#fat-stat', fatData, '#c37300');
+
 
         </script>
 </body>

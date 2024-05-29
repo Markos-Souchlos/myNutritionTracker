@@ -1,80 +1,114 @@
 <%- include('partials/header') %>
 
+<%   const date = new Date();  %>
+
 <div id="settings-page">
-    <h1>Settings</h1>
+    <h1 class="header">Settings</h1>
 
     <a href="/premium" title="check out our premium plan!"><img id="crown" src="/icons/crown.png" /></a>
+
+    <form id="input-card" action="/update-settings" method="post">
+        <div  class="card">
+            <div id="title">
+                <h2>Set a value</h2>
+                <img src="/icons/button.png" onclick="hideInputCard()"/>
+            </div>
+            <input type="text" name="value"  autofocus autocomplete="off"/>
+            <button type="submit">Save</button>
+            <input type="hidden" value="" name="field" />
+        </div>
+    </form>
 
     <div class="mycontainer">
         <h2>Profile</h2>
 
-        <div>
-            <h3>Weight</h3>
-            <button>80kg</button>
-        </div>
-
-        <div>
+        <div id="height" onclick="showInputCard(this)">
             <h3>Height</h3>
-            <button>179</button>
+            <p> <%= info.height %> cm</p>
         </div>
 
-        <div>
+        <div id="activity_id" onclick="showInputCard(this)">
             <h3>Activity level</h3>
-            <button>high</button>
+            <p> <%= info.act.toLowerCase() %> </p>
         </div>
 
-        <div>
-            <h3>Age</h3>
-            <button>20</button>
+        <div id="birth_year" onclick="showInputCard(this)">
+            <h3>Year of birth</h3>
+            <p> <%= info.birth_year %> </p>
         </div>
 
-        <div>
+        <div id="gender_id" onclick="showInputCard(this)">
             <h3>Gender</h3>
-            <button>male</button>
+            <p> <%= info.gend.toLowerCase() %> </p>
         </div>
 
-    </div class="mycontainer">
+    </div>
 
     <div class="mycontainer">
         <h2>Nutritional Goals</h2>
 
-        <div>
+        <div id="goal_id" onclick="showInputCard(this)">
             <h3>Goal</h3>
-            <button>Gain</button>
+            <p> <%= info.goa.toLowerCase() %> </p>
         </div>
         
-        <div>
+        <div id="calorie" onclick="showInputCard(this)">
             <h3>Manually update calorie goal</h3>
-            <button>2800cal</button>
+            <p>2800cal</p>
         </div>
 
-        <div>
+        <div id="macros">
             <h3>Macronutrient Targets</h3>
-            <button>30% 30% 40% </button>
+            <p>30% 30% 40% </p>
         </div>
         
-    </div class="mycontainer">
+    </div>
+
+    <div class="mycontainer" id="your-progress">
+        <h2>Your Progress</h2>
+
+        <div id="weight" onclick="showInputCard(this)">
+            <h3>Update weight</h3>
+            <p>. </p>
+        </div>
+        
+        <div id="muscle" onclick="showInputCard(this)">
+            <h3>Update muscle mass</h3>
+            <p>.</p>
+        </div>
+
+        <div id="fat" onclick="showInputCard(this)">
+            <h3>Update body fat %</h3>
+            <p> .%</p>
+        </div>
+        
+    </div>
 
     <div class="mycontainer">
         <h2>General</h2>
 
-        <div>
+        <div id="theme_id" onclick="showInputCard(this)">
             <h3>Theme</h3>
-            <button>Auto dark</button>
+            <p> <%= info.them.toLowerCase() %> </p>
         </div>
 
-        <div>
+        <div  id="system_id" onclick="showInputCard(this)">
+            <h3>System</h3>
+            <p> <%= info.sys.toLowerCase() %> </p>
+        </div>
+
+        <div id="delete">
             <h3>Delete History</h3>
         </div>
 
-        <div>
+        <div  id="language_id" onclick="showInputCard(this)">
             <h3>Language</h3>
-            <button>English</button>
+            <p> <%= info.lang.toLowerCase() %> </p>
         </div>
         
-    </div class="mycontainer">
+    </div>
 
-    <div class="mycontainer">
+    <div class="mycontainer" id="contact">
         <h2>Contact and support</h2>
 
         <div>
@@ -83,27 +117,64 @@
 
         <div>
             <h3>Twitter</h3>
-            <button>@project.com</button>
+            <p>@project.com</p>
         </div>
 
         <div>
             <h3>FaceBook</h3>
-            <button>myProject.com</button>
+            <p>myProject.com</p>
         </div>
 
         <div>
             <h3>Gmail</h3>
-            <button>myProject@hmail.com</button>
+            <p>myProject@hmail.com</p>
         </div>
         
-    </div class="mycontainer">
+    </div>
 
     <footer id="log-out-cont">
-        <button id="log-out">Log Out</button>
+        <a href="/logout" id="log-out">Log Out</a>
         <small>completed days: 5</small>
-        <small>Copyright 2024</small>
+        <small>Copyright <%= date.getFullYear() %></small>
     </footer>
 </div>
+
+<script>
+
+    const inpCard = document.querySelector('#input-card');
+    const weightText = document.querySelector('#weight p');
+    const muscleText = document.querySelector('#muscle p');
+    const fatText = document.querySelector('#fat p');
+
+    function showInputCard(btn) {
+        inpCard.style.display = "flex";
+        inpCard[2].value = btn.id;
+    }
+
+    function hideInputCard() {
+        inpCard.style.display = "none";
+        inpCard[0].value = "";
+    }
+
+    function findLastValue(spec) {
+        const prog = <%- JSON.stringify(prog) %>;
+        for (let i=prog.length-1; i>=0; i--) {
+            if (prog[i][spec]) {
+                return prog[i][spec];
+            }
+            console.log(prog[i]);
+        }
+        return "unset";
+    }
+
+    weightText.innerHTML = findLastValue("weight");
+    muscleText.innerHTML = findLastValue("muscle");
+    fatText.innerHTML = findLastValue("fat");
+
+    console.log(weightText.innerHTML);
+
+
+</script>
 
 <%- include('partials/navbar') %>
 

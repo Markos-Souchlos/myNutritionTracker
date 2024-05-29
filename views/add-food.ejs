@@ -16,13 +16,13 @@
         <button>
             <img src="/icons/barcode-scan.png" />
         </button>
-        <input type="button" value="Create" id="search-btn" />
+        <a href="/create-food" id="create-link">Create</a>
     </div>
     
 
     <% foods.forEach(obj => { %>
 
-        <div class="logs" id="N<%= obj.id %>">
+        <div class="logs card" id="N<%= obj.id %>">
             <div class="fimg"><img src="/icons/<%= obj.icon %>" alt="food image" width="100%"></div>
             <div class="vert-row"></div>
             <div class="finfo">

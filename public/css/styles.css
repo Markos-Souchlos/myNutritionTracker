@@ -6,7 +6,8 @@
   --bg: #14171f;
   --card: #333f49;
   --shadow: #0d1114;
-  --hiij: #5f7e58;
+  --border: #525B62;
+  /* --hiij: #5f7e58; */
 }
 
 body {
@@ -40,6 +41,7 @@ body {
   text-align: center;
   color: white;
   font-size: 20px;
+  outline: none;
 }
 
 .login-card label {
@@ -105,6 +107,22 @@ body {
   position: absolute;
   top:35px;
   right:30px;
+}
+
+.card {
+  background-color: var(--card);
+  box-shadow: 0px 0px 10px var(--shadow);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.header {
+  background-color: var(--card);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0px 0px 10px var(--shadow);
+  margin:0px;
+  padding: 35px 0px 30px 30px;
+  font-size: 35px;
 }
 
 #circle {
@@ -203,14 +221,10 @@ section {
 }
 
 .logs {
-  border: 1px solid #525B62;
-  border-radius: 10px;
   padding:10px;
   margin-bottom: 20px;
   height:78px;
   position:relative;
-  background-color: var(--card);
-  box-shadow: 0px 0px 20px var(--shadow);
 }
 
 .logs:last-child {
@@ -360,6 +374,18 @@ section {
   justify-content: space-around;
 }
 
+#edit-form-container {
+  width:100%;
+  display: flex;
+}
+
+#empty-logs {
+  width:140px;
+  margin:auto;
+  padding-bottom:130px;
+  opacity: 0.4;
+}
+
 
 
 
@@ -489,11 +515,11 @@ nav {
 
 #add-form #header {
   background-color: var(--card);
-  box-shadow: 0px 0px 20px var(--shadow);
+  box-shadow: 0px 0px 10px var(--shadow);
   width:100%;
-  padding:35px 0px 30px 0px;
+  padding:35px 0px 35px 0px;
   align-items: center;
-  border-bottom:1px solid grey;
+  border-bottom:1px solid var(--border);
 }
 
 #add-form #header div {
@@ -505,7 +531,6 @@ nav {
 }
 
 #add-form h1 {
-  /* background-color: green; */
   margin:0px;
 }
 
@@ -552,6 +577,7 @@ nav {
   background-color: #d4d4d4;
 }
 
+
 #add-form #search img {
   width:30px;
   border-radius: 4px;
@@ -560,16 +586,20 @@ nav {
   outline:none;
 }
 
-#add-form #search-btn {
+#add-form #create-link {
   color: white;
   width:80px;
-  height:40px;
+  height:38px;
   border:1px solid var(--blue);
   border-radius:0px 15px 15px 0px;
   background-color: var(--blue);
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 900;
+  text-decoration: none;
+  text-align: center;
+  align-content: center;
 }
-#add-form #search-btn:hover {
+#add-form #create-link:hover {
   cursor:pointer;
   background-color: #0061a7;
 }
@@ -667,6 +697,27 @@ nav {
 
 
 
+
+#create-page form {
+  width:80%;
+  height: calc(100vh - 300px);
+  min-height: 200px;
+  margin:auto;
+  border-radius: 10px;
+}
+
+#create-page form {
+  margin-top:50px;
+}
+
+
+
+
+
+
+
+
+
 #history-page {
   width: 100%;
   max-width: 1000px;
@@ -674,32 +725,10 @@ nav {
   box-sizing: border-box;
 }
 
-#history-page header {
-  background-color: var(--card);
-  border-bottom:1px solid grey;
-  box-shadow: 0px 0px 20px var(--shadow);
-  margin:auto;
-  width:100%;
-  padding:30px 0px 20px 0px;
-  gap:20px;
+#history-page h1 {
   position: fixed;
   top:0px;
-}
-
-#history-page header h1 {
-  margin:0px 0px 0px 35px;
-  font-size: 35px;
-}
-
-#history-page #calendar-btn {
-  position:absolute;
-  top:40px;
-  right:100px;
-  height:30px;
-  width:30px;
-  background-color: darkcyan;
-  border:1px solid grey;
-  border-radius: 10px;
+  width:100%;
 }
 
 #days {
@@ -726,6 +755,7 @@ nav {
   margin:180px auto 120px;
   /* background-color: green; */
   height: calc(100vh - 330px);
+  min-height:200px;
   overflow: scroll;
   display: flex;
   flex-wrap: wrap;
@@ -749,8 +779,8 @@ nav {
 }
 
 .loged {
-  background-color: var(--blue);
-  border:1px solid var(--blue);
+  background-color: #0061a7c0;
+  border:1px solid #0061a715;
 }
 
 .empty {
@@ -760,14 +790,14 @@ nav {
 }
 
 .over {
-  background-color: #6e1a1a;
-  border:1px solid #6e1a1a;
+  background-color: #ff000050;
+  border: 1px solid #ff000015;
   color: white;
 }
 
 .succed {
-  background-color: #3d7424;
-  border:1px solid #3d7424;
+  background-color: #00ff0030;
+  border: 1px solid #00ff0015;
   color: white;
 }
 
@@ -792,23 +822,6 @@ nav {
   margin-bottom:250px;
 }
 
-#stats header {
-  margin:0px 0px 70px 0px;
-  background-color: var(--card);
-  padding: 2px 0px 10px 0px;
-  border-bottom: 1px solid grey;
-  box-shadow: 0px 0px 20px var(--shadow) ;
-}
-
-#stats header h1 {
-  margin-top:30px;
-  margin-left: 30px;
-  font-size: 35px;
-}
-
-/* #stats #container {
-  background-color: red;
-} */
 
 #stats .stats-card {
   border:1px solid grey;
@@ -897,28 +910,96 @@ nav {
   max-width: 1000px;
 }
 
-#settings-page h1 {
-  padding-top:35px;
-  padding-left:30px;
-  padding-bottom: 20px;
-  padding:35px 0px 30px 30px;
-  font-size: 35px;
-  background-color: var(--card);
-  border-bottom:1px solid grey;
-  box-shadow: 0px 0px 20px var(--shadow);
+#input-card {
+  display:none;
+  position:fixed;
+  top:0px;
+  width:100vw;
+  height:100vh;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(2px);
+  z-index: 3;
+}
+
+#input-card > div{
+  display: flex;
+  width:300px;
+  height:200px;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#input-card #title {
+  position:relative;
+}
+
+#input-card #title img {
+  width:20px;
+  position: absolute;
+  top:-5px;
+  right:-70px;
+}
+
+#input-card #title img:hover {
+  cursor:pointer;
+  opacity: 0.8;
+}
+
+
+#input-card h2 {
   margin:0px;
+  font-size: 30px;
+}
+
+#input-card input{
+  background-color: var(--card);
+  border:none;
+  border-bottom:1px solid var(--border);
+  outline: none;
+  text-align:center;
+  color:white;
+  height:40px;
+  width: 80%;
+  font-size: 30px;
+}
+
+#input-card button {
+  width:80%;
+  background-color: var(--blue);
+  border:none;
+  border-radius: 10px;
+  height:35px;
+  color:white;
+  font-size:20px;
+  opacity: 0.8;
+}
+#input-card button:hover {
+  cursor:pointer;
+  border:1px solid var(--border);
+  opacity:1;
 }
 
 #settings-page .mycontainer {
   width:85%;
-  margin:0px auto 40px;
+  margin:50px auto 40px;
 
 }
 
 #settings-page .mycontainer > div {
-  margin-bottom: 20px;
+  padding:10px 0px 10px 20px;
+}
+#settings-page .mycontainer:not(#contact) > div:hover {
+  cursor:pointer;
+  background-color: var(--card);
 }
 
+#delete:hover {
+  color:red;
+}
 
 #settings-page h2 {
   font-weight: 900;
@@ -926,13 +1007,15 @@ nav {
 
 #settings-page h3 {
   margin:0px;
-  font-weight:400;
+  margin-top:10px;
+  font-weight:600;
 }
 
-#settings-page .mycontainer button {
+#settings-page .mycontainer p {
   background-color: inherit;
   border:none;
   color:grey;
+  margin:0px;
 }
 
 #log-out-cont {
@@ -947,17 +1030,22 @@ nav {
 #log-out {
   width:85%;
   height:40px;
-  font-size: 20px;
+  font-size: 25px;
   max-width:700px;
   border: none;
   background-color: red;
+  opacity: 0.9;
   border-radius: 10px;
   color:white;
-  margin:auto;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 900;
+  align-content: center;
 }
 #log-out:hover {
   box-shadow: 0px 0px 10px var(--shadow);
   cursor:pointer;
+  opacity: 1;
 }
 
 
