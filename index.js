@@ -41,7 +41,7 @@ console.log(`Database has been succesfully connected with the server`)
 async function getUserInfo() {
   try {
     const result = await db.query(`
-      SELECT USERS.ID, LANGUAGE.LANG, SYSTEM.SYS, ACTIVITY.ACT, GENDER.GEND, 
+      SELECT USERS.ID, USERS.EMAIL, LANGUAGE.LANG, SYSTEM.SYS, ACTIVITY.ACT, GENDER.GEND, 
       GOAL.GOA, THEME.THEM, USERS.BIRTH_YEAR, USERS.HEIGHT, USERS.WEIGHT
       FROM USERS 
       JOIN LANGUAGE ON USERS.LANGUAGE_ID = LANGUAGE.ID 
@@ -160,7 +160,36 @@ app.get("/create-food", (req,res) => {
   }
 });
 
-app.post("/update", async (req,res) => {
+app.post("/create-new-food", async (req,res) => {
+  const name = req.body.name;
+  const cal = req.body.cal;
+  const prot = req.body.prot;
+  const fat = req.body.fat;
+  const carb = req.body.carb;
+
+  var values = "";
+  var fields = "";
+  if (prot) {
+    values += `, ${prot}`;
+    fields += `, PROT`
+  }
+  if (fat) {
+    values += `, ${fat}`;
+    fields += `, FAT`
+  }
+  if (carb) {
+    values += `, ${carb}`;
+    fields += `, CARB`
+  }
+
+  const command = `INSERT INTO FOODS (NAME, CAL${fields} ,USER_ID) VALUES ('${name}', ${cal} ${values}, ${currentUser} );`;
+  console.log(command)
+  db.query(command);
+  res.redirect("/secrets")
+
+})
+
+app.post("/update", async (req,res) => {  
     const grams = parseInt(req.body.grams);
     const foodID = parseInt(req.body.food);
     if (grams === 0) {
@@ -281,6 +310,7 @@ app.get("/settings", async (req,res) => {
 
 app.post("/update-settings", async (req,res) => {
   if (req.isAuthenticated()) {
+
     const field = req.body.field;
     const value = req.body.value;
 
@@ -289,13 +319,17 @@ app.post("/update-settings", async (req,res) => {
         const date = new Date().toLocaleDateString();
         const result = await db.query(`SELECT * FROM USER_PROGRESS WHERE USER_ID = ${currentUser} AND DATE = '${date}';`);
         console.log(result.rows[0]);
+
         if (result.rows[0]) {
-          console.log("update");
           db.query(`UPDATE USER_PROGRESS SET ${field} = ${value} WHERE USER_ID = ${currentUser} AND DATE = '${date}'`);
         } else {
-          console.log("insert");
           db.query(`INSERT INTO USER_PROGRESS (USER_ID, ${field}, DATE) VALUES (${currentUser}, ${value}, '${date}');`);
         }
+
+        if (field=="weight") {
+          db.query(`UPDATE USERS SET WEIGHT = ${value} WHERE ID = ${currentUser};`);
+        }
+
       } catch (err) {
         console.log(err)
       }
@@ -411,37 +445,10 @@ app.listen(port, () => {
 
 
 
-// add database foods
-// add new food button
-
-// todo make each user fetch his own data
-// make .log buttons work
-// make .add button work
-// add favicon
-// add navbar icons
-// TODO add seperate css pages
-//  add search engine
-// TODO scan bar code
-// todo make database macros float and update the values
-// todo user not found error message
-// todo email already exists handler 
-// added empty logs image
-// upgraded database
-// new create-food.ejs file
-// stats reads weight,muscle,fat information from database
-// new index.sql folder with database commands
-// added cutlery icon to user's custom foods
-
-// todo make secrets.ejs calculate goals of user
+//  make update weight update USER_PROGRESS.WEIGHT AND USERS.WEIGHT
 // todo make create food work
-// todo stats.ejs bars are working
-// todo history.ejs is working
-// settings.ejs updates database
-// todo render page based on settings
-// todo add formated inputs for each settings field
-// todo add bmi, bmr, maximum muscular potential etc to stats
 
-// todo make premium work
+
 
 
 

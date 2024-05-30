@@ -4,11 +4,124 @@
     <h1 class="header">Create food</h1>
     <a href="/premium" title="check out our premium plan!"><img id="crown" src="/icons/crown.png" /></a>    
 
-    <form class="card">
+    <form class="card" action="/create-new-food" method="post">
+
+        <div id="name">
+            <h2>Name</h2>
+            <input type="text" placeholder="E.g. chicken" name="name" />
+        </div>
+
+        <div id="calories">
+            <h2>Calories </h2>
+            <input type="text" placeholder="0"  onkeyup="validateNumber(this)" name="cal"/>
+        </div>
         
+        <div id="fat">
+            <h3>Total Fat</h3>
+            <input type="text" placeholder="0"  onkeyup="validateNumber(this)" name="fat" />
+        </div>
+
+        <div class="near">
+    
+            <div id="saturated">
+                <h4>Saturated Fat</h4>
+                <input type="text" placeholder="0" onkeyup="validateNumber(this)" />
+            </div>
+    
+            <div id="trans">
+                <h4>Trans Fat</h4>
+                <input type="text" placeholder="0" onkeyup="validateNumber(this)" />
+            </div>
+    
+            <div id="cholesterol">
+                <h4>Cholesterol</h4>
+                <input type="text" placeholder="0" onkeyup="validateNumber(this)" />
+            </div>
+    
+            <div id="sodium">
+                <h4>Sodium</h4>
+                <input type="text" placeholder="0" onkeyup="validateNumber(this)" />
+            </div>
+        </div>
+
+        <div id="carbohydrates">
+            <h3>Total Carbohydrates</h3>
+            <input type="text" placeholder="0" onkeyup="validateNumber(this)" name="carb" />
+        </div>
+
+        <div class="near">
+            <div id="fibers">
+                <h4>Dietary Fibers</h4>
+                <input type="text" placeholder="0" onkeyup="validateNumber(this)" />
+            </div>
+    
+            <div id="sugar">
+                <h4>Total Sugar</h4>
+                <input type="text" placeholder="0" onkeyup="validateNumber(this)" />
+            </div>
+        </div>
+
+        <div id="protein">
+            <h3>Protein</h3>
+            <input type="text" placeholder="0" onkeyup="validateNumber(this)" name="prot" />
+        </div>
+        
+        <button >Done</button>
+
     </form>
 
 </div>
+
+<script>
+    
+    const form = document.querySelector('form');
+    const button = document.querySelector('button');
+    
+    checkSubmitBtn()
+
+    function validateNumber(inp) {
+        let text = inp.value.trim();
+        let pattern = new RegExp(/\D+/);
+        
+        let validText = text.replace(/\D/g, '');
+        inp.value = validText;
+    }
+
+    function checkSubmitBtn() {
+        const foodName = document.querySelector('#name ').childNodes[3].value;
+        const foodCalories = document.querySelector('#calories ').childNodes[3].value;
+
+        if (foodName && foodCalories) {
+            console.log("clickable")
+            button.classList.add("clickable");
+            button.style.opacity = "0.9";
+            button.disabled = false;
+        } else {
+            console.log("unclickable")
+            button.classList.remove("clickable");
+            button.style.opacity = "0.2";
+            button.disabled = true;
+        }
+    }
+
+    
+    function cleanedName(name) {
+        return name.replace(/'+/g, '');
+    }
+    
+    form.addEventListener("keyup", () => {
+        var name = document.querySelector('#name ').childNodes[3];
+        const cal = document.querySelector('#calories').childNodes[3];
+        
+        name.value = cleanedName(name.value);
+
+        console.table(name.value, cal.value)
+
+        checkSubmitBtn()
+
+    })
+
+</script>
 
 <%- include('partials/navbar') %>
 

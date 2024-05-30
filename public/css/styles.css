@@ -19,6 +19,9 @@ body {
   font-weight: 400;
 }
 
+input {
+  outline: none;
+}
 
 .container {
   margin:auto;
@@ -542,7 +545,6 @@ nav {
   font-size: 16px;
 }
 #add-form #submitBtn:hover {
-  cursor: pointer;
   opacity: 0.9;
 }
 
@@ -701,14 +703,91 @@ nav {
 #create-page form {
   width:80%;
   height: calc(100vh - 300px);
-  min-height: 200px;
+  min-height: 350px;
   margin:auto;
   border-radius: 10px;
+  margin-top:50px;
+  display:flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: calc((100vh - 630px) / 10);
+  align-items: center;
 }
 
-#create-page form {
-  margin-top:50px;
+#create-page form > div {
+  /* background-color: red; */
+  width:80%;
+  display: flex;
+  justify-content: space-between;
+  font-weight: 900;
+  font-family: monospace;
 }
+
+#create-page #name {
+  padding:20px;
+}
+#create-page #name  input{
+  width:70%;
+  /* background-color: blue; */
+  font-size:20px;
+}
+
+#create-page h2 {
+  margin: 0px;
+  font-size: 25px;
+}
+
+#create-page h3 {
+  margin:0px;
+  font-size: 20px;
+  /* background-color: blue; */
+}
+
+#create-page h4 {
+margin:0px;
+margin-left:25px;
+}
+
+#create-page .near {
+  display:flex;
+  flex-direction: column;
+  /* background-color: red; */
+  justify-content: flex-start;
+  gap: calc((100vh - 800px) / 10);
+  width:80%;
+}
+
+#create-page .near div {
+  /* background-color: green; */
+  width:100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+#create-page form input {
+  width:50px;
+  text-align: right;
+  color:white;
+  background-color: inherit;
+  border:none;
+  font-size: 18px;
+}
+
+#create-page button {
+  background-color: var(--blue);
+  color:white;
+  border:none;
+  width: 90%;
+  height:50px;
+  border-radius: 10px;
+  font-size: 20px ;
+  cursor: not-allowed;
+}
+#create-page button.clickable:hover {
+  cursor:pointer;
+  box-shadow: 0px 0px 10px var(--shadow);
+}
+
 
 
 
@@ -770,7 +849,14 @@ nav {
   width:40px;
   text-align: center;
   align-content:center;
-  border-radius: 10px;
+  border-radius: 30px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none; 
+}
+#history-page #container div:hover:not(.empty) {
+  cursor: pointer;
 }
 
 #history-page .date {
@@ -787,6 +873,9 @@ nav {
   background-color: transparent;
   border:1px solid transparent;
   color: transparent;
+}
+.empty:hover {
+  cursor:default;
 }
 
 .over {
@@ -1041,6 +1130,7 @@ nav {
   text-decoration: none;
   font-weight: 900;
   align-content: center;
+  margin-bottom: 20px;
 }
 #log-out:hover {
   box-shadow: 0px 0px 10px var(--shadow);

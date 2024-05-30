@@ -27,8 +27,8 @@
             <div class="vert-row"></div>
             <div class="finfo">
                 <div class="up">
-                  <p class="name" id="N<%= obj.id %>"><%= obj.name %></p>
-                  <p class="serving">Serv. size: <span id="gr<%= obj.id %>" oninput="validateNumber(this)" onblur="replace100(this)" contenteditable="true">100</span>gr</p>
+                  <p class="name" id="N<%= obj.id %>"><%= obj.name %></p> 
+                  <p class="serving">Serv. size: <span id="gr<%= obj.id %>" oninput="validateNumber(this)" onblur="replace0(this)" contenteditable="true">100</span>gr</p>
                   <p class="cal">
                     <span><%= obj.cal %></span>
                     <small>cal</small>
@@ -62,8 +62,10 @@
     function checkSubmitBtn() {
         if (selectedFoods.length>0) {
             submitBtn.disabled = false;
+            submitBtn.style.cursor = "pointer";
         } else if (selectedFoods.length == 0) {
             submitBtn.disabled = true;
+            submitBtn.style.cursor = "not-allowed";
         }
     }
     
@@ -101,6 +103,7 @@
         
     }
 
+
     function displayOptions(myStr) {
 
         searchArray.forEach(element => {
@@ -134,16 +137,11 @@
         let text = spanElement.textContent.trim();
         let pattern = new RegExp(/\D+/);
 
-        if (pattern.test(text)) {
-            console.log("char detected")
-            // Replace the content with only the valid portion
-            let validText = text.replace(/\D/g, '');
-            spanElement.textContent = validText;
-        }
-
+        let validText = text.replace(/\D/g, '');
+        spanElement.textContent = validText;
     }
 
-    function replace100(element) {
+    function replace0(element) {
         if (!(element.textContent)) {
             element.textContent = "0";
         }
