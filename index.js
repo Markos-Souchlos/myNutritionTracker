@@ -11,7 +11,6 @@ const app = express();
 const port = 3000;
 const saltRounds = 10;
 env.config();
-const currentUser = 1;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -38,7 +37,7 @@ db.connect();
 console.log(`Database has been succesfully connected with the server`)
 
 //Fetch user's information
-async function getUserInfo() {
+async function getUserInfo(userID) {
   try {
     const result = await db.query(`
       SELECT USERS.ID, USERS.EMAIL, LANGUAGE.LANG, SYSTEM.SYS, ACTIVITY.ACT, GENDER.GEND, 
@@ -50,7 +49,7 @@ async function getUserInfo() {
       JOIN GENDER ON USERS.GENDER_ID = GENDER.ID 
       JOIN GOAL ON USERS.GOAL_ID = GOAL.ID 
       JOIN THEME ON USERS.THEME_ID = THEME.ID 
-      WHERE USERS.ID = ${currentUser};
+      WHERE USERS.ID = ${userID};
     `);
     return result.rows[0];
   } catch (err) {
@@ -58,14 +57,62 @@ async function getUserInfo() {
   }
 }
 
+//Update USER_HISTORY TABLE
+async function updateUserHistory(userID) {
+  const response = await db.query(`SELECT * FROM USER_HISTORY WHERE DATE = '${new Date().toISOString().slice(0,10)}' AND USER_ID = ${userID};`);
+  const foods = await getUserFoods(userID);
+  if (foods.length) {
+    if (response.rows[0]) {
+      db.query(`     
+      UPDATE USER_HISTORY SET 
+      CAL = (SELECT COALESCE(SUM(FOODS.CAL * USER_FOODS.GR / 100), 0) FROM FOODS 
+        JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID 
+        WHERE USER_FOODS.USER_ID = ${userID}), 
+      PROT = (SELECT COALESCE(SUM(FOODS.PROT * USER_FOODS.GR / 100), 0) FROM FOODS 
+        JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID 
+        WHERE USER_FOODS.USER_ID = ${userID}), 
+      FAT = (SELECT COALESCE(SUM(FOODS.FAT * USER_FOODS.GR / 100), 0) FROM FOODS 
+        JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID 
+        WHERE USER_FOODS.USER_ID = ${userID}), 
+      CARB = (SELECT COALESCE(SUM(FOODS.CARB * USER_FOODS.GR / 100), 0) FROM FOODS 
+        JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID 
+        WHERE USER_FOODS.USER_ID = ${userID})
+      WHERE USER_HISTORY.USER_ID = ${userID} AND USER_HISTORY.DATE::DATE = NOW()::DATE;
+      `);
+    } else {
+      db.query(`
+      INSERT INTO USER_HISTORY VALUES (${userID},
+      (SELECT SUM(FOODS.CAL * USER_FOODS.GR / 100) 
+      FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID 
+      WHERE USER_FOODS.USER_ID = ${userID}), 
+      (SELECT SUM(FOODS.PROT * USER_FOODS.GR / 100) 
+      FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID 
+      WHERE USER_FOODS.USER_ID = ${userID}), 
+      (SELECT SUM(FOODS.FAT * USER_FOODS.GR / 100) 
+      FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID 
+      WHERE USER_FOODS.USER_ID = ${userID}), 
+      (SELECT SUM(FOODS.CARB * USER_FOODS.GR / 100) 
+      FROM FOODS JOIN USER_FOODS ON USER_FOODS.FOOD_ID = FOODS.ID 
+      WHERE USER_FOODS.USER_ID = ${userID}), NOW() );
+      `);
+    }
+  } else {
+    db.query(`
+    DELETE FROM USER_HISTORY 
+    WHERE USER_ID = ${userID}
+    AND DATE::DATE = NOW()::DATE; 
+    `);
+  }
+}
+
 // Fetch user's logs
-async function getUserFoods() {
+async function getUserFoods(userID) {
     try {
         const result = await db.query(`
           SELECT foods.id, name, gr, cal, prot, fat, carb, icon 
           FROM FOODS JOIN USER_FOODS 
           ON USER_FOODS.FOOD_ID = FOODS.ID 
-          WHERE USER_FOODS.USER_ID = ${currentUser} 
+          WHERE USER_FOODS.USER_ID = ${userID} 
           ORDER BY CAL DESC;
           `);
         return result.rows;
@@ -75,12 +122,12 @@ async function getUserFoods() {
 }
 
 //Fetch user's progress
-async function getUserProgress() {
+async function getUserProgress(userID) {
   try {
       const result = await db.query(`
       SELECT * 
       FROM USER_PROGRESS 
-      WHERE USER_ID = ${currentUser} 
+      WHERE USER_ID = ${userID} 
       AND DATE > NOW() - INTERVAL '1year' 
       ORDER BY DATE;
       `);
@@ -91,15 +138,15 @@ async function getUserProgress() {
 }
 
 // Fetch foods
-async function getFoods() {
+async function getFoods(userID) {
   try {
       const result = await db.query(`
       SELECT FOODS.* 
       FROM FOODS LEFT JOIN USER_FOODS 
       ON FOODS.ID = USER_FOODS.FOOD_ID 
-      AND USER_FOODS.USER_ID = ${currentUser} 
+      AND USER_FOODS.USER_ID = ${userID} 
       WHERE (USER_FOODS.USER_ID IS NULL) 
-      AND (FOODS.USER_ID IS NULL OR FOODS.USER_ID = ${currentUser}) 
+      AND (FOODS.USER_ID IS NULL OR FOODS.USER_ID = ${userID}) 
       ORDER BY NAME;
     `);
       return result.rows;
@@ -109,15 +156,18 @@ async function getFoods() {
 }
 
 app.post("/add", async (req,res) => {
+  const userID = req.user.id;
   var foodsString = req.body.foodsArray;
-  var gramsString = req.body.gramsArray;
+  console.log("foodstring",foodsString);
+  var gramsString = req.body.gramsArray; 
+  console.log("gramString",gramsString);
   foodsString = foodsString.split(',');
   gramsString = gramsString.split(',');
   var command = "";
 
   for (let i=0; i<foodsString.length; i++) {
     if (!!(parseInt(gramsString[i])) && gramsString != "0") {
-    command += `(${currentUser}, ${foodsString[i]}, ${gramsString[i]}),`;
+    command += `(${userID}, ${foodsString[i]}, ${gramsString[i]}),`;
     }
   }
 
@@ -127,13 +177,11 @@ app.post("/add", async (req,res) => {
 
   if (!!(command)) {
     try {
-      db.query(`
-        INSERT INTO USER_FOODS 
-        VALUES ${final};
-      `);
+      db.query(`INSERT INTO USER_FOODS VALUES ${final};`);
     } catch (error) {
       console.log(error);
     }
+    updateUserHistory(userID);
   }
 
   res.redirect("/secrets");
@@ -142,7 +190,7 @@ app.post("/add", async (req,res) => {
 app.get("/add-food-page", async (req,res) => {
   if (req.isAuthenticated()) {
     (async () => {
-        const foods = await getFoods();    
+        const foods = await getFoods(req.user.id);    
         res.render("add-food.ejs", {
             foods: foods
         })
@@ -161,6 +209,7 @@ app.get("/create-food", (req,res) => {
 });
 
 app.post("/create-new-food", async (req,res) => {
+  const userID = req.user.id;
   const name = req.body.name;
   const cal = req.body.cal;
   const prot = req.body.prot;
@@ -182,7 +231,7 @@ app.post("/create-new-food", async (req,res) => {
     fields += `, CARB`
   }
 
-  const command = `INSERT INTO FOODS (NAME, CAL${fields} ,USER_ID) VALUES ('${name}', ${cal} ${values}, ${currentUser} );`;
+  const command = `INSERT INTO FOODS (NAME, CAL${fields} ,USER_ID) VALUES ('${name}', ${cal} ${values}, ${userID} );`;
   console.log(command)
   db.query(command);
   res.redirect("/secrets")
@@ -190,6 +239,7 @@ app.post("/create-new-food", async (req,res) => {
 })
 
 app.post("/update", async (req,res) => {  
+    const userID = req.user.id;
     const grams = parseInt(req.body.grams);
     const foodID = parseInt(req.body.food);
     if (grams === 0) {
@@ -197,7 +247,7 @@ app.post("/update", async (req,res) => {
             await db.query(`
               DELETE FROM USER_FOODS 
               WHERE FOOD_ID = ${foodID} 
-              AND USER_ID = ${currentUser};
+              AND USER_ID = ${userID};
             `);
         } catch (error) {
             console.log(error);
@@ -208,23 +258,29 @@ app.post("/update", async (req,res) => {
               UPDATE USER_FOODS 
               SET GR = ${grams} 
               WHERE FOOD_ID = ${foodID} 
-              AND USER_ID = ${currentUser};
+              AND USER_ID = ${userID};
             `);
         } catch (error) {
             console.log(error);
         }
     }
+
+    updateUserHistory(userID);
     res.redirect("/secrets");
 })
 
 app.post("/delete", async (req,res) => {
-    const id = req.body.id;
-    try {
-        await db.query(`DELETE FROM USER_FOODS WHERE FOOD_ID = ${id} AND USER_ID = ${currentUser};`);
-    } catch (error) {
-        console.log(error)
-    }
-    res.redirect("/secrets");
+  const userID = req.user.id;
+  const id = req.body.id;
+
+  try {
+      await db.query(`DELETE FROM USER_FOODS WHERE FOOD_ID = ${id} AND USER_ID = ${userID};`);
+  } catch (error) {
+      console.log(error)
+  }
+
+  updateUserHistory(userID);
+  res.redirect("/secrets");
 });
 
 app.get("/", (req, res) => {
@@ -252,8 +308,8 @@ app.get("/logout", (req,res) => {
 app.get("/secrets", (req,res) => {
   if (req.isAuthenticated()) {
     (async () => {
-        const foods = await getUserFoods();    
-        const info = await getUserInfo();
+        const foods = await getUserFoods(req.user.id);    
+        const info = await getUserInfo(req.user.id);
         res.render("secrets.ejs", {
           foods: foods,
           info: info
@@ -281,7 +337,7 @@ app.get("/history", (req,res) => {
 app.get("/stats", async (req,res) => {
   if (req.isAuthenticated()) {
     (async () => {
-        const prog = await getUserProgress(); 
+        const prog = await getUserProgress(req.user.id); 
         res.render("stats.ejs", {
             prog: prog
         })
@@ -294,8 +350,8 @@ app.get("/stats", async (req,res) => {
 app.get("/settings", async (req,res) => {
   if (req.isAuthenticated()) {
     (async () => {
-        const info = await getUserInfo();
-        const prog = await getUserProgress();  
+        const info = await getUserInfo(req.user.id);
+        const prog = await getUserProgress(req.user.id);  
         // console.log(info);  
         // console.log(prog);  
         res.render("settings.ejs", {
@@ -311,30 +367,31 @@ app.get("/settings", async (req,res) => {
 app.post("/update-settings", async (req,res) => {
   if (req.isAuthenticated()) {
 
+    const userID = req.user.id;
     const field = req.body.field;
     const value = req.body.value;
 
     if (field=="weight" || field=="muscle" || field=="fat") {
       try {
         const date = new Date().toLocaleDateString();
-        const result = await db.query(`SELECT * FROM USER_PROGRESS WHERE USER_ID = ${currentUser} AND DATE = '${date}';`);
+        const result = await db.query(`SELECT * FROM USER_PROGRESS WHERE USER_ID = ${userID} AND DATE = '${date}';`);
         console.log(result.rows[0]);
 
         if (result.rows[0]) {
-          db.query(`UPDATE USER_PROGRESS SET ${field} = ${value} WHERE USER_ID = ${currentUser} AND DATE = '${date}'`);
+          db.query(`UPDATE USER_PROGRESS SET ${field} = ${value} WHERE USER_ID = ${userID} AND DATE = '${date}'`);
         } else {
-          db.query(`INSERT INTO USER_PROGRESS (USER_ID, ${field}, DATE) VALUES (${currentUser}, ${value}, '${date}');`);
+          db.query(`INSERT INTO USER_PROGRESS (USER_ID, ${field}, DATE) VALUES (${userID}, ${value}, '${date}');`);
         }
 
         if (field=="weight") {
-          db.query(`UPDATE USERS SET WEIGHT = ${value} WHERE ID = ${currentUser};`);
+          db.query(`UPDATE USERS SET WEIGHT = ${value} WHERE ID = ${userID};`);
         }
 
       } catch (err) {
         console.log(err)
       }
     } else {
-      await db.query(`UPDATE USERS SET ${field} = ${value} WHERE ID = ${currentUser};`);
+      await db.query(`UPDATE USERS SET ${field} = ${value} WHERE ID = ${userID};`);
     }
     
     res.redirect("/settings");
@@ -429,11 +486,17 @@ passport.use(new Strategy(async function verify(username, password, cb) {
 }));
 
 passport.serializeUser((user, cb) => {
-  cb(null, user);
-});
+  cb(null, user.id);
+}); 
 
-passport.deserializeUser((user, cb) => {
-  cb(null, user);
+passport.deserializeUser(async (id, cb) => {
+  try {
+    const result = await db.query(`SELECT * FROM users WHERE id = ${id};`);
+    const user = result.rows[0];
+    cb(null, user);
+  } catch (err) {
+    cb(err);
+  }
 });
 
 
@@ -442,16 +505,17 @@ app.listen(port, () => {
 });
 
 
-
-
-
 //  make update weight update USER_PROGRESS.WEIGHT AND USERS.WEIGHT
 // todo make create food work
-
-
-
-
 
 //? Pro have more storage for foods in the database
 //? Pro users have access to stats
 //? Pro users have more themes
+
+// SELECT ROUND(SUM(FOODS.CAL*USER_FOODS.GR/100)) AS TOTAL_CAL, 
+// ROUND(SUM(FOODS.PROT*USER_FOODS.GR/100)) AS TOTAL_PROT, 
+// ROUND(SUM(FOODS.FAT*USER_FOODS.GR/100)) AS TOTAL_FAT, 
+// ROUND(SUM(FOODS.CARB*USER_FOODS.GR/100)) AS TOTAL_CARB 
+// FROM USER_FOODS JOIN FOODS 
+// ON USER_FOODS.FOOD_ID = FOODS.ID 
+// WHERE USER_FOODS.USER_ID = 1;

@@ -1,5 +1,5 @@
 # ServerSide 
-- [ ] Make each user fetch his own data
+- [X] Make each user fetch his own data
 - [ ] Email does not exists or wrong password handler 
 - [ ] Email already exists handler
 - [X] Fix space on inputs error
@@ -8,7 +8,9 @@
 - [ ] Make foods float and update values
 
 # Home page
-- [ ] Make new days update home page
+- [X] Make new days update home page
+  - [X] Create crontab
+  - [X] update /add-food-handler 
 - [ ] Calc legit goals
 - [ ] Configure favicon
 
