@@ -2,10 +2,11 @@
 
 <div id="history-page">
 
-    <h1 class="header">History</h1>
+    <header>
+        <h1 class="header">History</h1>
     
-    <a href="/premium" title="check out our premium plan!"><img id="crown" src="/icons/crown.png" /></a>
-        
+        <a href="/premium" title="check out our premium plan!"><img id="crown" src="/icons/crown.png" /></a>    
+    </header>        
     
     <div id="days">
         <p>Mon</p>
@@ -16,38 +17,82 @@
         <p>Sat</p>
         <p>Sun</p>
     </div>
-    
+
     <div id="container">
 
-        <% for (let i=0; i<8; i++) {
-                for (let j=0; j<44; j++) { 
-                    if (j/3==1 || j/8==2 || j/4==1) {%>
+        <% 
+            const startDate = new Date(history[0].date);
+            const endDate = new Date();
+            const currentDate = new Date(startDate);
+            const months = [
+                'January', 'February', 'March', 'April', 
+                'May', 'June', 'July', 'August', 
+                'September', 'October', 'November', 'December'
+            ];
 
-                    <div class="loged"> <%= j+1 %> </div>
-                <% } else if (j>=30) { %>
-        
-                    <div class="empty"> <%= j+1 %> </div>
+            const iterations = (currentDate.getDay() == 0) ? 6 : currentDate.getDay() - 1;
+            for (let i=0; i<iterations; i++) { %>
+                <div class="empty"></div>
+          <%}
 
-                 <% } else if (j/7==0) { %>
-        
-                    <div class="over"> <%= j+1 %> </div>
-                
-                <% } else if (j/4==3) { %>
-        
-                    <div class="succed"> <%= j+1 %> </div>
+            for (let i=1; i<currentDate.getDate(); i++) { %>
+                <div class="date"> <%= i %> </div>
+          <%}
 
-                <% } else { %>
-
-                    <div class="date"> <%= j+1 %> </div>
-
-            <%  }
-               }
-            } %>
+            
+            var i = 0;
+            do {
+                if (currentDate.getDate() == 1) {%>
+                  <%for (let i=0; i<14; i++) { %>
+                    <div class="empty"></div>
+                <%}
+                }
+                if (history[i] && history[i].date.toISOString().slice(0,10) == currentDate.toISOString().slice(0,10)) { %>
+                    <div class="loged"> <%= currentDate.getDate() %> </div>
+                  <%i++;
+                } else {%>
+                <div class="date"> <%= currentDate.getDate() %> </div>
+              <%}
+                currentDate.setDate(currentDate.getDate() + 1);
+          } while ( currentDate <= endDate );
+            
+        %>
 
     </div>
 
 </div>
 
 <%- include('partials/navbar') %>
+
+<script>
+  const user = {
+      weight: parseFloat(`<%= info.weight %>`),
+      height: parseFloat(`<%= info.height %>`),
+      theme: `<%= info.them %>`,
+      activity: `<%= info.act %>`,
+      gender: `<%= info.gend %>`,
+      goal: `<%= info.goa %>`,
+      birth: parseInt(`<%= info.birth_year %>`),
+    }
+
+    const colors = {
+      // NAME: ['PRIMARY', 'SECONDARY', 'CARD', 'LETTERS', 'NAV'],
+      DARK: ['#2a343cff', '#0073C3', '#333f49', '#ffffff', '#14171f'],
+      LIGHT: ['#cccccc', '#0073c3', '#bababa', '#000000', '#333333'],
+      BLACK: ['#000000', '#0073c3', '#0f0f0f', '#ffffff', '#171717'],
+      BLUE: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      RED: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      GOLD: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      SILVER: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+    }
+
+    const root = document.documentElement;
+    root.style.setProperty('--primary', colors[user.theme][0]);
+    root.style.setProperty('--blue', colors[user.theme][1]); // make secondary
+    root.style.setProperty('--card', colors[user.theme][2]);
+    root.style.setProperty('--letters', colors[user.theme][3]);
+    root.style.setProperty('--bg', colors[user.theme][4]);
+
+</script>
 
 <%- include('partials/footer') %>

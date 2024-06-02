@@ -59,7 +59,7 @@ async function getUserInfo(userID) {
 
 //Update USER_HISTORY TABLE
 async function updateUserHistory(userID) {
-  const response = await db.query(`SELECT * FROM USER_HISTORY WHERE DATE = '${new Date().toISOString().slice(0,10)}' AND USER_ID = ${userID};`);
+  const response = await db.query(`SELECT * FROM USER_HISTORY WHERE DATE = '${new Date().toLocaleDateString()}' AND USER_ID = ${userID};`);
   const foods = await getUserFoods(userID);
   if (foods.length) {
     if (response.rows[0]) {
@@ -102,6 +102,17 @@ async function updateUserHistory(userID) {
     WHERE USER_ID = ${userID}
     AND DATE::DATE = NOW()::DATE; 
     `);
+  }
+} 
+
+//Fetch USER_HISTORY table
+async function getUserHistory(userID) {
+  try {
+    const result = await db.query(`SELECT * FROM USER_HISTORY WHERE USER_ID = ${userID} ORDER BY DATE;`);
+    console.log(result.rows);
+    return result.rows; 
+  } catch (err) {
+    console.log(err);
   }
 }
 
@@ -190,9 +201,11 @@ app.post("/add", async (req,res) => {
 app.get("/add-food-page", async (req,res) => {
   if (req.isAuthenticated()) {
     (async () => {
+        const info = await getUserInfo(req.user.id);
         const foods = await getFoods(req.user.id);    
         res.render("add-food.ejs", {
-            foods: foods
+            foods: foods,
+            info: info
         })
     })();
   } else {
@@ -202,7 +215,12 @@ app.get("/add-food-page", async (req,res) => {
 
 app.get("/create-food", (req,res) => {
   if (req.isAuthenticated()) {
-    res.render("create-food.ejs");
+    (async () => {
+      const info = await getUserInfo(req.user.id);
+      res.render("create-food.ejs", {
+          info: info
+      })
+  })();
   } else {
     res.redirect("/login");
   }
@@ -322,13 +340,15 @@ app.get("/secrets", (req,res) => {
 
 app.get("/history", (req,res) => {
   if (req.isAuthenticated()) {
-    // (async () => {
-    //     const foods = await getUserFoods();    
-    //     res.render("secrets.ejs", {
-    //         foods: foods
-    //     })
-    // })();
-    res.render("history.ejs");
+    (async () => {
+        const userID = req.user.id;
+        const info = await getUserInfo(req.user.id);
+        const history = await getUserHistory(userID);    
+        res.render("history.ejs", {
+            history: history,
+            info: info
+        })
+    })();
   } else {
     res.redirect("/login");
   }
@@ -337,9 +357,12 @@ app.get("/history", (req,res) => {
 app.get("/stats", async (req,res) => {
   if (req.isAuthenticated()) {
     (async () => {
+        const info = await getUserInfo(req.user.id);
         const prog = await getUserProgress(req.user.id); 
+        const history = await getUserHistory(req.user.id); 
         res.render("stats.ejs", {
-            prog: prog
+            prog: prog,
+            info: info
         })
     })();
   } else {
@@ -371,7 +394,11 @@ app.post("/update-settings", async (req,res) => {
     const field = req.body.field;
     const value = req.body.value;
 
-    if (field=="weight" || field=="muscle" || field=="fat") {
+    console.log("value: ",value);
+    console.log("field: ",field);
+    console.log("userID: ",userID);
+
+    if (field=="weight" || field=="muscle" || field=="fat") { 
       try {
         const date = new Date().toLocaleDateString();
         const result = await db.query(`SELECT * FROM USER_PROGRESS WHERE USER_ID = ${userID} AND DATE = '${date}';`);
@@ -511,11 +538,3 @@ app.listen(port, () => {
 //? Pro have more storage for foods in the database
 //? Pro users have access to stats
 //? Pro users have more themes
-
-// SELECT ROUND(SUM(FOODS.CAL*USER_FOODS.GR/100)) AS TOTAL_CAL, 
-// ROUND(SUM(FOODS.PROT*USER_FOODS.GR/100)) AS TOTAL_PROT, 
-// ROUND(SUM(FOODS.FAT*USER_FOODS.GR/100)) AS TOTAL_FAT, 
-// ROUND(SUM(FOODS.CARB*USER_FOODS.GR/100)) AS TOTAL_CARB 
-// FROM USER_FOODS JOIN FOODS 
-// ON USER_FOODS.FOOD_ID = FOODS.ID 
-// WHERE USER_FOODS.USER_ID = 1;

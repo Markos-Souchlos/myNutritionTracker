@@ -30,7 +30,7 @@
                   <p class="name" id="N<%= obj.id %>"><%= obj.name %></p> 
                   <p class="serving">Serv. size: <span id="gr<%= obj.id %>" oninput="validateNumber(this)" onblur="replace0(this)" contenteditable="true">100</span>gr</p>
                   <p class="cal">
-                    <span><%= obj.cal %></span>
+                    <span><%= Math.round(obj.cal) %></span>
                     <small>cal</small>
                   </p>
                 </div>
@@ -52,6 +52,36 @@
 <%- include('partials/footer') %>
 
 <script>
+
+    const user = {
+      weight: parseFloat(`<%= info.weight %>`),
+      height: parseFloat(`<%= info.height %>`),
+      theme: `<%= info.them %>`,
+      activity: `<%= info.act %>`,
+      gender: `<%= info.gend %>`,
+      goal: `<%= info.goa %>`,
+      birth: parseInt(`<%= info.birth_year %>`),
+    }
+
+    const colors = {
+      // NAME: ['PRIMARY', 'SECONDARY', 'CARD', 'LETTERS', 'NAV'],
+      DARK: ['#2a343cff', '#0073C3', '#333f49', '#ffffff', '#14171f'],
+      LIGHT: ['#cccccc', '#0073c3', '#bababa', '#000000', '#333333'],
+      BLACK: ['#000000', '#0073c3', '#0f0f0f', '#ffffff', '#171717'],
+      BLUE: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      RED: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      GOLD: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      SILVER: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+    }
+
+    const root = document.documentElement;
+    root.style.setProperty('--primary', colors[user.theme][0]);
+    root.style.setProperty('--blue', colors[user.theme][1]); // make secondary
+    root.style.setProperty('--card', colors[user.theme][2]);
+    root.style.setProperty('--letters', colors[user.theme][3]);
+    root.style.setProperty('--bg', colors[user.theme][4]);
+
+
     var selectedFoods = [];
     var grams = [];
     const submitBtn = document.querySelector('#add-form #submitBtn');

@@ -13,10 +13,11 @@
   - [X] update /add-food-handler 
 - [ ] Calc legit goals
 - [ ] Configure favicon
+- [ ] change homepage file name
 
 # History page
-- [ ] Make rendering of months based on database
-- [ ] Make rendering read data and update colors
+- [X] Make rendering of months based on database
+- [X] Make rendering read data and update colors
 - [ ] Create box with date's information
 
 # Add page
@@ -26,18 +27,19 @@
 # Stats page
 - [ ] Make bar graphs work
   - [ ] Make JS print the last weekend
-  - [ ] Make homepage update USERS_HISTORY
-- [ ] render only true values on line charts
+  - [X] Make homepage update USERS_HISTORY
+- [X] render only true values on line charts
 - [ ] Add more content (bmr, bmi, max.masc.poten.)
 - [ ] Make streaks work
 
 # Settings page
 - [ ] Settings updates database
 - [ ] Make pages render based on settings
-  - [ ] Make theme work
+  - [X] Make theme work
   - [ ] Make language work
-  - [ ] Make calories + macros work
-- [ ] Add input forms on settings.ejs
+  - [ ] Make calories work
+  - [ ] Make macros work
+- [X] Add input forms on settings.ejs
 - [ ] Add legit emails
 - [ ] Copyright?
 

@@ -66,26 +66,58 @@
     <script>
         // Declaring the data
 
+        const user = {
+        weight: parseFloat(`<%= info.weight %>`),
+        height: parseFloat(`<%= info.height %>`),
+        theme: `<%= info.them %>`,
+        activity: `<%= info.act %>`,
+        gender: `<%= info.gend %>`,
+        goal: `<%= info.goa %>`,
+        birth: parseInt(`<%= info.birth_year %>`),
+        }
+
+        const pallete = {
+        // NAME: ['PRIMARY', 'SECONDARY', 'CARD', 'LETTERS', 'NAV', 'BORDER'],
+        DARK: ['#2a343cff', '#0073C3', '#333f49', '#ffffff', '#14171f'],
+        LIGHT: ['#cccccc', '#0073c3', '#bababa', '#000000', '#333333'],
+        BLACK: ['#000000', '#0073c3', '#0f0f0f', '#ffffff', '#171717'],
+        BLUE: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+        RED: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+        GOLD: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+        SILVER: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+        }
+
+        const root = document.documentElement;
+        root.style.setProperty('--primary', pallete[user.theme][0]);
+        root.style.setProperty('--blue', pallete[user.theme][1]); // make secondary
+        root.style.setProperty('--card', pallete[user.theme][2]);
+        root.style.setProperty('--letters', pallete[user.theme][3]);
+        root.style.setProperty('--bg', pallete[user.theme][4]);
+
         const progressData = <%- JSON.stringify(prog) %>;
         
         const weightData = [];
         const muscleData = [];
         const fatData = [];
         progressData.forEach(obj => {
-            weightData.push({date: new Date(obj.date), y: parseFloat(obj.weight)});
-            muscleData.push({date: new Date(obj.date), y: parseFloat(obj.muscle)});
-            fatData.push({date: new Date(obj.date), y: parseFloat(obj.fat)});
+            if (obj.weight) {
+                weightData.push({date: new Date(obj.date), y: parseFloat(obj.weight)});
+            }
+            if (obj.muscle) {
+                muscleData.push({date: new Date(obj.date), y: parseFloat(obj.muscle)});
+            }
+            if (obj.fat) {
+                fatData.push({date: new Date(obj.date), y: parseFloat(obj.fat)});
+            }
         });
 
 
         const calData = [
-            {date: new Date(2024, 5, 1), y: 2626}, // Mon
-            {date: new Date(2024, 5, 2), y: 2695}, // Tue
-            {date: new Date(2024, 5, 3), y: 2876}, // Wen
-            {date: new Date(2024, 5, 4), y: 3026}, // Thu
-            {date: new Date(2024, 5, 5), y: 2464}, // Fri
-            {date: new Date(2024, 5, 6), y: 2695}, // Sat
-            {date: new Date(2024, 5, 7), y: 2694}, // Sun
+            {date: new Date(2024, 4, 31), y: 2626},
+            {date: new Date(2024, 4, 30), y: 2695},
+            {date: new Date(2024, 4, 29), y: 2876},
+            {date: new Date(2024, 4, 28), y: 3026},
+            {date: new Date(2024, 4, 27), y: 3126},
         ]
 
         const macrosData = [
@@ -99,32 +131,62 @@
         ]
 
 
+        function getCurrentWeek() {
+            const now = new Date();
+            const dayOfWeek = now.getDay(); // Get the current day of the week (0-6)
+            const numDaysFromMonday = (dayOfWeek + 6) % 7; // Calculate how many days have passed since Monday
+
+            const currentMonday = new Date(now);
+            currentMonday.setDate(now.getDate() - numDaysFromMonday); // Set to current Monday
+
+            const weekDates = [];
+            for (let i = 0; i < 7; i++) {
+                const date = new Date(currentMonday);
+                date.setDate(currentMonday.getDate() + i); // Add i days to the current Monday
+                weekDates.push(date);
+            }
+            return weekDates;
+        }
+
+        function formatDataForCurrentWeek(data) {
+            const currentWeek = getCurrentWeek();
+            const formattedData = currentWeek.map(date => {
+                const dataPoint = data.find(d => new Date(d.date).toDateString() === date.toDateString());
+                return {
+                    date: date,
+                    y: dataPoint ? dataPoint.y : 0 // Use 0 if there's no data for the date
+                };
+            });
+            return formattedData;
+        }
 
 
         function createBarChart(card, data, color) {
+            const formattedData = formatDataForCurrentWeek(data);
+
             // Calculating y-axis limits with padding
             const yMin = 0;
-            const yMax = d3.max(data, d => d.y);
+            const yMax = d3.max(formattedData, d => d.y);
             const yPadding = (yMax - yMin) * 0.1;
             const yDomainMax = yMax + yPadding;
 
             // Creating SVG Canvas
             const width = 360;
             const height = 150;
-            const margin = {top: 0, right: 30, bottom: 40, left: 50};
+            const margin = { top: 0, right: 30, bottom: 40, left: 50 };
 
             const svg = d3.select(card).append("svg")
-            .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", `translate(${margin.left},${margin.top})`);
-            
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+                .append("g")
+                .attr("transform", `translate(${margin.left},${margin.top})`);
+
             const innerWidth = width - margin.left - margin.right;
             const innerHeight = height - margin.top - margin.bottom;
-            
-            // Creatimg Scales
+
+            // Creating Scales
             const xScale = d3.scaleBand()
-                .domain(data.map(d => d.date))
+                .domain(formattedData.map(d => d.date))
                 .range([0, innerWidth])
                 .padding(0.4);
 
@@ -132,22 +194,22 @@
                 .domain([yMin, yDomainMax])
                 .range([innerHeight, 0]);
 
-                // Adding Axes
-                const xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%a"));
-                const yAxis = d3.axisLeft(yScale).ticks(4);
-                
-                // Adding gridlines
-                const xGrid = d3.axisBottom(xScale).tickSize(-innerHeight).tickFormat('');
-                const yGrid = d3.axisLeft(yScale).ticks(4).tickSize(-innerWidth).tickFormat('');
-                
-                svg.append("g").attr("class", "grid").attr("transform", `translate(0,${innerHeight})`).call(xGrid);
-                svg.append("g").attr("class", "grid").call(yGrid);
-                svg.append("g").attr("transform", `translate(0,${innerHeight})`).call(xAxis);
-                svg.append("g").call(yAxis);
-                
-                // Drawing Bars
-                svg.selectAll(".bar")
-                .data(data)
+            // Adding Axes
+            const xAxis = d3.axisBottom(xScale).tickFormat(d3.timeFormat("%a"));
+            const yAxis = d3.axisLeft(yScale).ticks(4);
+
+            // Adding gridlines
+            const xGrid = d3.axisBottom(xScale).tickSize(-innerHeight).tickFormat('');
+            const yGrid = d3.axisLeft(yScale).ticks(4).tickSize(-innerWidth).tickFormat('');
+
+            svg.append("g").attr("class", "grid").attr("transform", `translate(0,${innerHeight})`).call(xGrid);
+            svg.append("g").attr("class", "grid").call(yGrid);
+            svg.append("g").attr("transform", `translate(0,${innerHeight})`).call(xAxis);
+            svg.append("g").call(yAxis);
+
+            // Drawing Bars
+            svg.selectAll(".bar")
+                .data(formattedData)
                 .enter()
                 .append("rect")
                 .attr("class", "bar")
@@ -156,20 +218,20 @@
                 .attr("width", xScale.bandwidth())
                 .attr("height", d => innerHeight - yScale(d.y))
                 .attr("fill", color);
-                
-                // Tooltip
+
+            // Tooltip
             const tooltip = d3.select("body").append("div").attr("class", "tooltip");
 
             svg.selectAll(".bar")
-                .on("click", function(event, d) {
+                .on("click", function (event, d) {
                     tooltip.style("display", "block")
-                    .style("left", `${event.pageX + 5}px`)
+                        .style("left", `${event.pageX + 5}px`)
                         .style("top", `${event.pageY - 28}px`)
                         .style("background", "transparent")
                         .style("border", "none")
                         .html(`${d.y}`);
-                    })
-                .on("mouseout", function() {
+                })
+                .on("mouseout", function () {
                     tooltip.style("display", "none");
                 });
 

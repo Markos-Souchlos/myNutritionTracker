@@ -19,6 +19,18 @@
         </div>
     </form>
 
+    <form id="smart-input-card" action="/update-settings" method="post">
+        <div class="card">
+            <img src="/icons/button.png" onclick="hideSmartInputCard()"/>
+            <div id="title">
+                <h2>Select a value</h2>
+            </div>
+            <div id="select-cont">
+                
+            </div>
+        </div>
+    </form>
+
     <div class="mycontainer">
         <h2>Profile</h2>
 
@@ -27,7 +39,13 @@
             <p> <%= info.height %> cm</p>
         </div>
 
-        <div id="activity_id" onclick="showInputCard(this)">
+        <div id="activity_id" onclick="showSmartInputCard([
+            {name:'Sedentary', value:1},
+            {name:'Lightly Active', value:2},
+            {name:'Moderately Active', value:3},
+            {name:'Very Active', value:4},
+            {name:'Super Active', value:5}],
+             'ACTIVITY')">
             <h3>Activity level</h3>
             <p> <%= info.act.toLowerCase() %> </p>
         </div>
@@ -37,7 +55,10 @@
             <p> <%= info.birth_year %> </p>
         </div>
 
-        <div id="gender_id" onclick="showInputCard(this)">
+        <div id="gender_id" onclick="showSmartInputCard([
+            {name:'Male',value:1},
+            {name:'Female',value:2}],
+            'GENDER')">
             <h3>Gender</h3>
             <p> <%= info.gend.toLowerCase() %> </p>
         </div>
@@ -47,7 +68,11 @@
     <div class="mycontainer">
         <h2>Nutritional Goals</h2>
 
-        <div id="goal_id" onclick="showInputCard(this)">
+        <div id="goal_id" onclick="showSmartInputCard([
+            {name:'Lose Fat',value:1},
+            {name:'Maintain Weight',value:2},
+            {name:'Gain Weight',value:3}],
+            'GOAL')">
             <h3>Goal</h3>
             <p> <%= info.goa.toLowerCase() %> </p>
         </div>
@@ -87,12 +112,15 @@
     <div class="mycontainer">
         <h2>General</h2>
 
-        <div id="theme_id" onclick="showInputCard(this)">
+        <div id="theme_id" onclick="showSmartInputCard([{name:'dark', value:1}, {name:'black', value:5}, {name:'light', value:2}], 'THEME')">
             <h3>Theme</h3>
             <p> <%= info.them.toLowerCase() %> </p>
         </div>
 
-        <div  id="system_id" onclick="showInputCard(this)">
+        <div  id="system_id" onclick="showSmartInputCard([
+            {name:'Metric', value:1},
+            {name:'Imperial', value:2}],
+            'SYSTEM')">
             <h3>System</h3>
             <p> <%= info.sys.toLowerCase() %> </p>
         </div>
@@ -101,7 +129,10 @@
             <h3>Delete History</h3>
         </div>
 
-        <div  id="language_id" onclick="showInputCard(this)">
+        <div  id="language_id" onclick="showSmartInputCard([
+        {name:'English', value:1},
+        {name:'Greek', value:2}],
+        'LANGUAGE')">
             <h3>Language</h3>
             <p> <%= info.lang.toLowerCase() %> </p>
         </div>
@@ -142,10 +173,41 @@
 
 <script>
 
+    const user = {
+      weight: parseFloat(`<%= info.weight %>`),
+      height: parseFloat(`<%= info.height %>`),
+      theme: `<%= info.them %>`,
+      activity: `<%= info.act %>`,
+      gender: `<%= info.gend %>`,
+      goal: `<%= info.goa %>`,
+      birth: parseInt(`<%= info.birth_year %>`),
+    }
+
+    const colors = {
+      // NAME: ['PRIMARY', 'SECONDARY', 'CARD', 'LETTERS', 'NAV'],
+      DARK: ['#2a343cff', '#0073C3', '#333f49', '#ffffff', '#14171f'],
+      LIGHT: ['#ffffff', '#0073c3', '#bababa', '#000000', '#333333'],
+      BLACK: ['#000000', '#0073c3', '#0f0f0f', '#ffffff', '#171717'],
+      BLUE: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      RED: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      GOLD: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      SILVER: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+    }
+
+    const root = document.documentElement;
+    root.style.setProperty('--primary', colors[user.theme][0]);
+    root.style.setProperty('--blue', colors[user.theme][1]); // make secondary
+    root.style.setProperty('--card', colors[user.theme][2]);
+    root.style.setProperty('--letters', colors[user.theme][3]);
+    root.style.setProperty('--bg', colors[user.theme][4]);
+
     const inpCard = document.querySelector('#input-card');
+    const smartInpCard = document.querySelector('#smart-input-card');
     const weightText = document.querySelector('#weight p');
     const muscleText = document.querySelector('#muscle p');
     const fatText = document.querySelector('#fat p');
+
+    // smartInpCard.style.display = 'flex';
 
     function showInputCard(btn) {
         inpCard.style.display = "flex";
@@ -155,6 +217,28 @@
     function hideInputCard() {
         inpCard.style.display = "none";
         inpCard[0].value = "";
+    }
+
+
+    function showSmartInputCard(arr, field) {
+        smartInpCard.style.display = "flex";
+
+        console.log(arr);
+        console.log(field);
+
+        var sicHTML = "";
+        arr.forEach(obj => {
+            sicHTML += `<button type="submit" name="value" value="${obj.value}">${obj.name}</button>\n`;
+        });
+        sicHTML += `<input type="hidden" name="field" value="${field}_ID"  />`;
+
+        smartInpCard.childNodes[1].childNodes[5].innerHTML = sicHTML;
+
+        console.log("sicHTML",smartInpCard.childNodes[1].childNodes[5].innerHTML);
+    }
+
+    function hideSmartInputCard() {
+        smartInpCard.style.display = "none";
     }
 
     function findLastValue(spec) {
