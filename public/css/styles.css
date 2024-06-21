@@ -1,6 +1,6 @@
 :root {
   --blue: #0073C3;
-  --blue-dade: #0073C325;
+  --primary-fade: #0073C325;
   /* --purple: #794DAF; */
   --primary: #2a343cff;
   --bg: #14171f;
@@ -137,7 +137,7 @@ input {
   justify-content: center;
   align-items: center;
   box-sizing:border-box;
-  box-shadow: 0 0 10px var(--blue);
+  /* box-shadow: 0 0 10px var(--blue); */
   position: relative;
 }
 
@@ -178,7 +178,7 @@ input {
 }
 
 #total-macros .m-bar {
-  background-color: var(--blue-dade);
+  background-color: var(--primary-fade);
   width:100px;
   height:5px;
 }
@@ -767,7 +767,7 @@ margin-left:25px;
 #create-page form input {
   width:50px;
   text-align: right;
-  color:white;
+  color: var(--letters);
   background-color: inherit;
   border:none;
   font-size: 18px;

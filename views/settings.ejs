@@ -184,14 +184,14 @@
     }
 
     const colors = {
-      // NAME: ['PRIMARY', 'SECONDARY', 'CARD', 'LETTERS', 'NAV'],
-      DARK: ['#2a343cff', '#0073C3', '#333f49', '#ffffff', '#14171f'],
-      LIGHT: ['#ffffff', '#0073c3', '#bababa', '#000000', '#333333'],
-      BLACK: ['#000000', '#0073c3', '#0f0f0f', '#ffffff', '#171717'],
-      BLUE: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
-      RED: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
-      GOLD: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
-      SILVER: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333'],
+      // NAME: ['PRIMARY', 'SECONDARY', 'CARD', 'LETTERS', 'NAV', 'SHADOW'],
+      DARK: ['#2a343cff', '#0073C3', '#333f49', '#ffffff', '#14171f', '#0d1114'],
+      LIGHT: ['#f2f2f2', '#0073c3', '#d9d9d9', '#000000', '#333333', '#bbbbbb'],
+      BLACK: ['#000000', '#0073c3', '#0f0f0f', '#ffffff', '#171717', '#0d1114'],
+      BLUE: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333', '#0d1114'],
+      RED: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333', '#0d1114'],
+      GOLD: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333', '#0d1114'],
+      SILVER: ['#bbbbbb', '#0073c3', '#999999', '#000000', '#333333', '#0d1114'],
     }
 
     const root = document.documentElement;
@@ -200,6 +200,7 @@
     root.style.setProperty('--card', colors[user.theme][2]);
     root.style.setProperty('--letters', colors[user.theme][3]);
     root.style.setProperty('--bg', colors[user.theme][4]);
+    root.style.setProperty('--shadow', colors[user.theme][5]);
 
     const inpCard = document.querySelector('#input-card');
     const smartInpCard = document.querySelector('#smart-input-card');
