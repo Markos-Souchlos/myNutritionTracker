@@ -26,15 +26,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+const connectionString = process.env.DATABASE_URL || 
+  `postgres://${process.env.PG_USER}:${process.env.PG_PASSWORD}@${process.env.PG_HOST}:${process.env.PG_PORT}/${process.env.PG_DATABASE}`;
+
 const db = new pg.Client({
-  user: process.env.PG_USER,
-  host: process.env.PG_HOST,
-  database: process.env.PG_DATABASE,
-  password: process.env.PG_PASSWORD,
-  port: process.env.PG_PORT,
+  connectionString,
+  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
 });
-db.connect();
-console.log(`Database has been succesfully connected with the server`)
+
+db.connect()
+  .then(() => console.log("Connected to PostgreSQL successfully"))
+  .catch(err => console.error("PostgreSQL connection error:", err));
 
 //Fetch user's information
 async function getUserInfo(userID) {
